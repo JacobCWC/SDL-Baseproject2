@@ -19,41 +19,17 @@ int main(int argc, char** argv)
 	// Texture which stores the actual sprite (this
 	// will be optimised).
 	SDL_Texture* backgroundTexture = nullptr;
-	SDL_Texture* playerTexture = nullptr;
+	SDL_Texture* goblinSpriteSheet = nullptr;
+	// Source Rectangles
+ // ... other source rectangles. 
+	SDL_Rect goblinSourceRectangle;
 
-	/**********************************
-	 *    Setup background image     *
-	 * ********************************/
+	// Goblin size in sprite sheet. 
+	const int GOBLIN_W = 65;
+	const int GOBLIN_H = 64;
 
-	 //Use the SDL_image library rather than SDL.
-	 // Load the sprite to our temp surface
-	temp = IMG_Load("assets/images/background.png");
-
-	// Create a texture object from the loaded image
-	// - we need the renderer we're going to use to draw this as well!
-	// - this provides information about the target format to aid optimisation.
-	backgroundTexture = SDL_CreateTextureFromSurface(gameRenderer, temp);
-
-	// Clean-up - we're done with 'image' now our texture has been created
-	SDL_FreeSurface(temp);
-	temp = nullptr;
-
-	/**********************************
-	*    Setup player image     *
-	* ********************************/
-
-	//Use the SDL_image library rather than SDL.
-	// Load the sprite to our temp surface
-	temp = IMG_Load("assets/images/dorf3.png");
-
-	// Create a texture object from the loaded image
-	// - we need the renderer we're going to use to draw this as well!
-	// - this provides information about the target format to aid optimisation.
-	playerTexture = SDL_CreateTextureFromSurface(gameRenderer, temp);
-
-	// Clean-up - we're done with 'image' now our texture has been created
-	SDL_FreeSurface(temp);
-	temp = nullptr;
+	// Destination Rectangle
+	SDL_Rect goblinDestRectangle;
 
 	gameWindow = SDL_CreateWindow(
 		"Hello GDV4001",          // Window title
@@ -63,7 +39,58 @@ int main(int argc, char** argv)
 		SDL_WINDOW_SHOWN);        // Window flags
 
 	// Create our renderer
+	gameRenderer = SDL_CreateRenderer(gameWindow, 0, 0);	gameWindow = SDL_CreateWindow(
+		"Hello GDV4001",          // Window title
+		SDL_WINDOWPOS_UNDEFINED,  // X position
+		SDL_WINDOWPOS_UNDEFINED,  // Y position
+		800, 600,                 // width, height
+		SDL_WINDOW_SHOWN);        // Window flags
+
+	// Create our renderer
 	gameRenderer = SDL_CreateRenderer(gameWindow, 0, 0);
+
+	/**********************************
+  *  Setup goblin sprites sheet    *
+  * ********************************/
+
+  //Use the SDL_image library rather than SDL.
+  // Load the sprite to our temp surface
+	temp = IMG_Load("assets/images/goblinSpear.png");
+
+	// Create a texture object from the loaded image
+	// - we need the renderer we're going to use to draw this as well!
+	// - this provides information about the target format to aid optimisation.
+	goblinSpriteSheet = SDL_CreateTextureFromSurface(gameRenderer, temp);
+
+	// Clean-up - we're done with 'image' now our texture has been created
+	SDL_FreeSurface(temp);
+	temp = nullptr;
+
+	/**********************************
+	*    Setup source rectangles      *
+	* ********************************/
+
+	// .. source info for other images.
+
+	goblinSourceRectangle.x = 0;
+	goblinSourceRectangle.y = 0;
+	goblinSourceRectangle.w = GOBLIN_W;
+	goblinSourceRectangle.h = GOBLIN_H;
+
+	/**********************************
+	 * Setup destination rectangles   *
+	 * ********************************/
+
+	goblinDestRectangle.x = 600;
+	goblinDestRectangle.y = 200;
+	goblinDestRectangle.w = GOBLIN_W;
+	goblinDestRectangle.h = GOBLIN_H;
+
+	// Clean-up - we're done with 'image' now our texture has been created
+	SDL_FreeSurface(temp);
+	temp = nullptr;
+
+
 	// 1. Clear the screen
 	SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 255);
 
@@ -71,8 +98,8 @@ int main(int argc, char** argv)
 	//(transparency) values (i.e. RGBA)
 	SDL_RenderClear(gameRenderer);
 // 2. Draw the image
-	SDL_RenderCopy(gameRenderer, backgroundTexture, NULL, NULL);
-	SDL_RenderCopy(gameRenderer, playerTexture, NULL, NULL);
+	 // ... draw background image 
+	SDL_RenderCopy(gameRenderer, goblinSpriteSheet, &goblinSourceRectangle, &goblinDestRectangle);
 // 3. Present the current frame to the screen
     SDL_RenderPresent(gameRenderer);
 	
@@ -80,7 +107,7 @@ int main(int argc, char** argv)
 	SDL_Delay(10000);
 //Clean up!
 	SDL_DestroyTexture(backgroundTexture);
-	SDL_DestroyTexture(playerTexture);
+	SDL_DestroyTexture(goblinSpriteSheet);
 	SDL_DestroyRenderer(gameRenderer);
 	SDL_DestroyWindow(gameWindow);
 
